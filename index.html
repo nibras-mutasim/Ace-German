@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACE GERMAN</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f0e8;
+    --cream: #ede8dc;
+    --gold: #c9a84c;
+    --gold-light: #e8c96a;
+    --red: #c0392b;
+    --red-light: #e74c3c;
+    --ink: #1a1a2e;
+    --muted: #6b6b6b;
+    --border: rgba(201,168,76,0.25);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    background-size: 150px;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.35;
+  }
+
+  /* ── HEADER ── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 48px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(14px);
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    color: var(--white);
+  }
+  .logo span { color: var(--gold); }
+
+  .tagline {
+    font-size: 0.7rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  nav { display: flex; gap: 8px; }
+  .nav-btn {
+    background: none;
+    border: 1px solid transparent;
+    color: var(--muted);
+    padding: 8px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover, .nav-btn.active {
+    color: var(--gold);
+    border-color: var(--border);
+    background: rgba(201,168,76,0.06);
+  }
+
+  /* ── PROGRESS BAR ── */
+  .xp-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .xp-bar {
+    width: 120px;
+    height: 5px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .xp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 99px;
+    transition: width 0.6s cubic-bezier(.4,0,.2,1);
+  }
+  .xp-label { color: var(--gold); font-weight: 600; }
+
+  /* ── SCREENS ── */
+  .screen { display: none; padding: 48px; min-height: calc(100vh - 73px); animation: fadeIn 0.35s ease; }
+  .screen.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── HOME HERO ── */
+  .hero {
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 64px 0 48px;
+  }
+  .hero-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+  }
+  .hero h1 em { font-style: italic; color: var(--gold); }
+  .hero p {
+    color: var(--muted);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    max-width: 480px;
+    margin: 0 auto 40px;
+  }
+
+  .module-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .module-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 24px;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+    text-align: left;
+  }
+  .module-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 70% 20%, rgba(201,168,76,0.07) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .module-card:hover::before { opacity: 1; }
+  .module-card:hover {
+    border-color: rgba(201,168,76,0.5);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  }
+  .module-icon {
+    font-size: 2rem;
+    margin-bottom: 14px;
+  }
+  .module-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .module-card p { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+  .module-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: rgba(201,168,76,0.15);
+    border: 1px solid var(--border);
+    color: var(--gold);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 99px;
+  }
+
+  /* ── SECTION HEADING ── */
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+  .section-head h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+  }
+  .section-head .sub {
+    font-size: 0.78rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── FLASHCARDS ── */
+  .flashcard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+  }
+  .flashcard-area {
+    perspective: 1200px;
+    width: 100%;
+    max-width: 480px;
+    height: 280px;
+    cursor: pointer;
+  }
+  .flashcard {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.55s cubic-bezier(.4,0,.2,1);
+  }
+  .flashcard.flipped { transform: rotateY(180deg); }
+
+  .card-face {
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    backface-visibility: hidden;
+    padding: 32px;
+  }
+  .card-front {
+    background: linear-gradient(145deg, #141414, #1e1e1e);
+    border: 1px solid var(--border);
+  }
+  .card-back {
+    background: linear-gradient(145deg, #1a1508, #201c10);
+    border: 1px solid rgba(201,168,76,0.4);
+    transform: rotateY(180deg);
+  }
+  .card-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .card-word {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem;
+    font-weight: 700;
+    text-align: center;
+  }
+  .card-article {
+    color: var(--gold);
+    font-size: 1.4rem;
+    font-style: italic;
+    margin-top: 4px;
+  }
+  .card-hint {
+    font-size: 0.75rem;
+    color: var(--muted);
+    position: absolute;
+    bottom: 16px;
+  }
+  .card-translation {
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: var(--gold);
+  }
+  .card-example {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-style: italic;
+    text-align: center;
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+
+  .fc-controls { display: flex; gap: 12px; align-items: center; }
+  .btn {
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+  }
+  .btn-primary {
+    background: var(--gold);
+    color: var(--black);
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--white);
+  }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-danger {
+    background: transparent;
+    border: 1px solid rgba(192,57,43,0.4);
+    color: var(--red-light);
+  }
+  .btn-danger:hover { background: rgba(192,57,43,0.1); }
+  .btn-success {
+    background: transparent;
+    border: 1px solid rgba(39,174,96,0.4);
+    color: #2ecc71;
+  }
+  .btn-success:hover { background: rgba(39,174,96,0.1); }
+
+  .fc-progress {
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .category-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+  .cat-tab {
+    padding: 6px 16px;
+    border-radius: 99px;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--muted);
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .cat-tab.active, .cat-tab:hover {
+    background: rgba(201,168,76,0.12);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* ── QUIZ ── */
+  .quiz-wrap { max-width: 620px; margin: 0 auto; }
+  .quiz-question-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .quiz-progress-bar {
+    height: 3px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 99px;
+    margin-bottom: 36px;
+    overflow: hidden;
+  }
+  .quiz-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    transition: width 0.4s ease;
+    border-radius: 99px;
+  }
+  .quiz-question {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 10px;
+  }
+  .quiz-subtitle {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 32px;
+  }
+  .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .quiz-opt {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.95rem;
+    color: var(--white);
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .quiz-opt:hover:not(:disabled) {
+    border-color: rgba(201,168,76,0.5);
+    background: rgba(201,168,76,0.06);
+  }
+  .quiz-opt.correct { border-color: #2ecc71; background: rgba(39,174,96,0.12); color: #2ecc71; }
+  .quiz-opt.wrong { border-color: var(--red-light); background: rgba(192,57,43,0.12); color: var(--red-light); }
+  .quiz-opt:disabled { cursor: default; }
+
+  .quiz-feedback {
+    margin-top: 20px;
+    padding: 16px 20px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    display: none;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { background: rgba(39,174,96,0.1); border: 1px solid rgba(39,174,96,0.25); color: #6edfa6; }
+  .quiz-feedback.bad { background: rgba(192,57,43,0.1); border: 1px solid rgba(192,57,43,0.25); color: #e07b6f; }
+
+  .quiz-score-wrap {
+    text-align: center;
+    padding: 40px 0;
+  }
+  .score-ring {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 3px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 28px;
+    position: relative;
+  }
+  .score-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: var(--gold);
+  }
+  .score-denom { font-size: 0.8rem; color: var(--muted); }
+  .score-msg {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .score-sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 28px; }
+
+  /* ── GRAMMAR ── */
+  .grammar-grid { display: grid; grid-template-columns: 280px 1fr; gap: 24px; min-height: 500px; }
+  .grammar-menu { display: flex; flex-direction: column; gap: 6px; }
+  .grammar-item {
+    padding: 12px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--muted);
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .grammar-item:hover, .grammar-item.active {
+    background: rgba(201,168,76,0.07);
+    border-color: var(--border);
+    color: var(--white);
+  }
+  .grammar-item.active { color: var(--gold); }
+  .grammar-item .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--muted);
+    flex-shrink: 0;
+  }
+  .grammar-item.active .dot { background: var(--gold); }
+
+  .grammar-content {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    overflow-y: auto;
+    max-height: 600px;
+  }
+  .grammar-content h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .grammar-content .desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 24px;
+    line-height: 1.6;
+  }
+  .table-wrap { overflow-x: auto; margin-bottom: 24px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+  th {
+    background: rgba(201,168,76,0.1);
+    color: var(--gold);
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--white);
+  }
+  tr:last-child td { border-bottom: none; }
+  td em { color: var(--gold); font-style: normal; font-weight: 500; }
+
+  .grammar-note {
+    background: rgba(201,168,76,0.06);
+    border-left: 3px solid var(--gold);
+    padding: 14px 16px;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: #c8b990;
+    margin-top: 8px;
+  }
+
+  .example-box {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin-top: 16px;
+  }
+  .example-box .ex-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .example-box .ex-row { margin-bottom: 6px; }
+  .example-box .de { font-family: 'DM Mono', monospace; color: var(--gold-light); font-size: 0.88rem; }
+  .example-box .en { font-size: 0.8rem; color: var(--muted); padding-left: 4px; }
+
+  /* ── NUMBERS ── */
+  .numbers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+  }
+  .num-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .num-digit {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--gold);
+    min-width: 40px;
+    text-align: right;
+  }
+  .num-word { font-size: 0.92rem; font-weight: 500; }
+  .num-pron { font-size: 0.72rem; color: var(--muted); font-style: italic; }
+
+  /* ── PHRASES ── */
+  .phrases-list { display: flex; flex-direction: column; gap: 10px; }
+  .phrase-card {
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.2s;
+    cursor: default;
+  }
+  .phrase-card:hover {
+    border-color: var(--border);
+    background: rgba(201,168,76,0.04);
+  }
+  .phrase-de { font-family: 'DM Mono', monospace; font-size: 0.95rem; color: var(--gold-light); }
+  .phrase-en { font-size: 0.88rem; color: var(--muted); }
+  .phrase-cat {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    background: rgba(201,168,76,0.1);
+    color: var(--gold);
+    padding: 3px 8px;
+    border-radius: 99px;
+    white-space: nowrap;
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    background: var(--ink);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 20px;
+    font-size: 0.85rem;
+    color: var(--gold);
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(.4,0,.2,1);
+    z-index: 9998;
+    max-width: 280px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* ── STATS BAR ── */
+  .stats-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+  }
+  .stat-chip {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 20px;
+    flex: 1;
+    min-width: 120px;
+  }
+  .stat-chip .val {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--gold);
+  }
+  .stat-chip .lbl { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 2px; }
+
+  /* ── SCROLL ── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.2); border-radius: 99px; }
+
+  @media (max-width: 700px) {
+    header { padding: 16px 20px; }
+    .screen { padding: 24px 20px; }
+    .grammar-grid { grid-template-columns: 1fr; }
+    .quiz-options { grid-template-columns: 1fr; }
+    nav { gap: 4px; }
+    .nav-btn { padding: 6px 10px; font-size: 0.72rem; }
+    .phrase-card { grid-template-columns: 1fr; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div>
+    <div class="logo">ACE <span>GERMAN</span></div>
+    <div class="tagline">Master the Language</div>
+  </div>
+  <nav>
+    <button class="nav-btn active" onclick="showScreen('home')">Home</button>
+    <button class="nav-btn" onclick="showScreen('flashcards')">Flashcards</button>
+    <button class="nav-btn" onclick="showScreen('quiz')">Quiz</button>
+    <button class="nav-btn" onclick="showScreen('grammar')">Grammar</button>
+    <button class="nav-btn" onclick="showScreen('phrases')">Phrases</button>
+    <button class="nav-btn" onclick="showScreen('numbers')">Numbers</button>
+  </nav>
+  <div class="xp-bar-wrap">
+    <span>XP</span>
+    <div class="xp-bar"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
+    <span class="xp-label" id="xpLabel">0</span>
+  </div>
+</header>
+
+<!-- ── TOAST ── -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════ HOME ═══════════════════════════ -->
+<section class="screen active" id="screen-home">
+  <div class="hero">
+    <div class="hero-eyebrow">★ Your German Journey Starts Here ★</div>
+    <h1>Learn <em>Deutsch</em><br>the Right Way</h1>
+    <p>Flashcards, grammar tables, quizzes, essential phrases — everything you need to achieve fluency, beautifully organised.</p>
+  </div>
+
+  <div class="stats-row" style="max-width:960px;margin:0 auto 40px;">
+    <div class="stat-chip"><div class="val" id="stat-words">120+</div><div class="lbl">Vocabulary Words</div></div>
+    <div class="stat-chip"><div class="val" id="stat-phrases">40+</div><div class="lbl">Phrases</div></div>
+    <div class="stat-chip"><div class="val" id="stat-xp-home">0</div><div class="lbl">Your XP</div></div>
+    <div class="stat-chip"><div class="val" id="stat-streak">0</div><div class="lbl">Quiz Streak</div></div>
+  </div>
+
+  <div class="module-grid">
+    <div class="module-card" onclick="showScreen('flashcards')">
+      <div class="module-badge">Interactive</div>
+      <div class="module-icon">🃏</div>
+      <h3>Flashcards</h3>
+      <p>Flip through vocabulary cards with articles, translations, and example sentences.</p>
+    </div>
+    <div class="module-card" onclick="showScreen('quiz')">
+      <div class="module-badge">Earn XP</div>
+      <div class="module-icon">⚡</div>
+      <h3>Quiz Mode</h3>
+      <p>Test your knowledge with multiple-choice questions. Earn XP for each correct answer.</p>
+    </div>
+    <div class="module-card" onclick="showScreen('grammar')">
+      <div class="module-badge">Reference</div>
+      <div class="module-icon">📐</div>
+      <h3>Grammar</h3>
+      <p>Cases, articles, verb conjugations — a clean reference for all the tricky rules.</p>
+    </div>
+    <div class="module-card" onclick="showScreen('phrases')">
+      <div class="module-badge">Practical</div>
+      <div class="module-icon">💬</div>
+      <h3>Phrases</h3>
+      <p>Greetings, travel, food, emotions — real phrases for real conversations.</p>
+    </div>
+    <div class="module-card" onclick="showScreen('numbers')">
+      <div class="module-badge">Essential</div>
+      <div class="module-icon">🔢</div>
+      <h3>Numbers</h3>
+      <p>Learn cardinal numbers from 0 to 1000 with pronunciation guides.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ FLASHCARDS ═══════════════════════════ -->
+<section class="screen" id="screen-flashcards">
+  <div class="section-head">
+    <h2>Flashcards</h2>
+    <span class="sub">Click card to reveal</span>
+  </div>
+
+  <div class="category-tabs" id="fcCatTabs"></div>
+
+  <div class="flashcard-container">
+    <div class="flashcard-area" onclick="flipCard()">
+      <div class="flashcard" id="flashcard">
+        <div class="card-face card-front">
+          <div class="card-label">German</div>
+          <div class="card-word" id="fc-word">—</div>
+          <div class="card-article" id="fc-article"></div>
+          <div class="card-hint">tap to flip</div>
+        </div>
+        <div class="card-face card-back">
+          <div class="card-label">English</div>
+          <div class="card-translation" id="fc-translation"></div>
+          <div class="card-example" id="fc-example"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc-controls">
+      <button class="btn btn-danger" onclick="markCard(false)">✗ Again</button>
+      <span class="fc-progress" id="fc-progress">1 / 1</span>
+      <button class="btn btn-success" onclick="markCard(true)">✓ Got it</button>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-outline" onclick="prevCard()">← Prev</button>
+      <button class="btn btn-outline" onclick="nextCard()">Next →</button>
+      <button class="btn btn-outline" onclick="shuffleCards()">⇄ Shuffle</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ QUIZ ═══════════════════════════ -->
+<section class="screen" id="screen-quiz">
+  <div class="section-head">
+    <h2>Quiz Mode</h2>
+    <span class="sub">Test your knowledge</span>
+  </div>
+
+  <div class="quiz-wrap" id="quiz-active">
+    <div class="quiz-question-meta">
+      <span id="quiz-q-num">Question 1 of 10</span>
+      <span id="quiz-score-live">Score: 0</span>
+    </div>
+    <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="qProgressFill" style="width:0%"></div></div>
+    <div class="quiz-question" id="quiz-q-text"></div>
+    <div class="quiz-subtitle" id="quiz-q-sub"></div>
+    <div class="quiz-options" id="quiz-opts"></div>
+    <div class="quiz-feedback" id="quiz-feedback"></div>
+    <div style="margin-top:24px;display:flex;justify-content:flex-end;" id="quiz-next-wrap">
+      <button class="btn btn-primary" onclick="nextQuestion()" id="quiz-next-btn" style="display:none;">Next →</button>
+    </div>
+  </div>
+
+  <div class="quiz-wrap" id="quiz-result" style="display:none;">
+    <div class="quiz-score-wrap">
+      <div class="score-ring">
+        <div class="score-num" id="final-score"></div>
+        <div class="score-denom" id="final-denom"></div>
+      </div>
+      <div class="score-msg" id="score-msg"></div>
+      <div class="score-sub" id="score-sub"></div>
+      <div style="display:flex;gap:12px;justify-content:center;">
+        <button class="btn btn-primary" onclick="startQuiz()">Play Again</button>
+        <button class="btn btn-outline" onclick="showScreen('home')">Home</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ GRAMMAR ═══════════════════════════ -->
+<section class="screen" id="screen-grammar">
+  <div class="section-head">
+    <h2>Grammar</h2>
+    <span class="sub">Reference tables</span>
+  </div>
+  <div class="grammar-grid">
+    <div class="grammar-menu" id="grammarMenu"></div>
+    <div class="grammar-content" id="grammarContent"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ PHRASES ═══════════════════════════ -->
+<section class="screen" id="screen-phrases">
+  <div class="section-head">
+    <h2>Essential Phrases</h2>
+    <span class="sub">Everyday German</span>
+  </div>
+
+  <div class="category-tabs" id="phraseCatTabs"></div>
+
+  <div class="phrases-list" id="phrasesList"></div>
+</section>
+
+<!-- ═══════════════════════════ NUMBERS ═══════════════════════════ -->
+<section class="screen" id="screen-numbers">
+  <div class="section-head">
+    <h2>Numbers</h2>
+    <span class="sub">Zahlen</span>
+  </div>
+  <div style="margin-bottom:20px;display:flex;gap:10px;flex-wrap:wrap;" id="numRangeTabs"></div>
+  <div class="numbers-grid" id="numbersGrid"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<script>
+// ── DATA ──────────────────────────────────────────────────────
+
+const vocabulary = {
+  Greetings: [
+    { de: 'Hallo', article: '', en: 'Hello', ex: 'Hallo! Wie geht es Ihnen? — Hello! How are you?' },
+    { de: 'Guten Morgen', article: '', en: 'Good morning', ex: 'Guten Morgen, schöner Tag! — Good morning, beautiful day!' },
+    { de: 'Guten Abend', article: '', en: 'Good evening', ex: 'Guten Abend, herzlich willkommen. — Good evening, welcome.' },
+    { de: 'Auf Wiedersehen', article: '', en: 'Goodbye', ex: 'Auf Wiedersehen! Bis morgen. — Goodbye! See you tomorrow.' },
+    { de: 'Tschüss', article: '', en: 'Bye (informal)', ex: 'Tschüss! Mach\'s gut. — Bye! Take care.' },
+    { de: 'Bitte', article: '', en: 'Please / You\'re welcome', ex: 'Kannst du mir helfen, bitte? — Can you help me, please?' },
+    { de: 'Danke', article: '', en: 'Thank you', ex: 'Vielen Danke für deine Hilfe. — Thank you very much for your help.' },
+    { de: 'Entschuldigung', article: '', en: 'Excuse me / Sorry', ex: 'Entschuldigung, wo ist der Bahnhof? — Excuse me, where is the station?' },
+  ],
+  Nouns: [
+    { de: 'Hund', article: 'der', en: 'Dog', ex: 'Der Hund ist sehr niedlich. — The dog is very cute.' },
+    { de: 'Katze', article: 'die', en: 'Cat', ex: 'Die Katze schläft auf dem Sofa. — The cat sleeps on the sofa.' },
+    { de: 'Haus', article: 'das', en: 'House', ex: 'Das Haus ist sehr groß. — The house is very big.' },
+    { de: 'Buch', article: 'das', en: 'Book', ex: 'Ich lese das Buch gern. — I like reading the book.' },
+    { de: 'Wasser', article: 'das', en: 'Water', ex: 'Ich möchte ein Glas Wasser. — I would like a glass of water.' },
+    { de: 'Zeit', article: 'die', en: 'Time', ex: 'Hast du Zeit für mich? — Do you have time for me?' },
+    { de: 'Freund', article: 'der', en: 'Friend (male)', ex: 'Er ist mein bester Freund. — He is my best friend.' },
+    { de: 'Stadt', article: 'die', en: 'City', ex: 'Die Stadt Berlin ist sehr schön. — The city of Berlin is very beautiful.' },
+    { de: 'Arbeit', article: 'die', en: 'Work / Job', ex: 'Meine Arbeit macht mir Spaß. — I enjoy my work.' },
+    { de: 'Kind', article: 'das', en: 'Child', ex: 'Das Kind spielt im Park. — The child plays in the park.' },
+    { de: 'Mann', article: 'der', en: 'Man', ex: 'Der Mann liest die Zeitung. — The man reads the newspaper.' },
+    { de: 'Frau', article: 'die', en: 'Woman / Wife', ex: 'Die Frau kocht Abendessen. — The woman cooks dinner.' },
+    { de: 'Tag', article: 'der', en: 'Day', ex: 'Schönen Tag noch! — Have a nice day!' },
+    { de: 'Jahr', article: 'das', en: 'Year', ex: 'Dieses Jahr fahren wir nach Wien. — This year we go to Vienna.' },
+  ],
+  Verbs: [
+    { de: 'sein', article: '', en: 'to be', ex: 'Ich bin müde. — I am tired.' },
+    { de: 'haben', article: '', en: 'to have', ex: 'Ich habe einen Hund. — I have a dog.' },
+    { de: 'gehen', article: '', en: 'to go', ex: 'Wir gehen ins Kino. — We are going to the cinema.' },
+    { de: 'kommen', article: '', en: 'to come', ex: 'Er kommt aus Deutschland. — He comes from Germany.' },
+    { de: 'machen', article: '', en: 'to do / make', ex: 'Was machst du heute? — What are you doing today?' },
+    { de: 'sprechen', article: '', en: 'to speak', ex: 'Ich spreche Deutsch und Englisch. — I speak German and English.' },
+    { de: 'essen', article: '', en: 'to eat', ex: 'Wir essen zusammen zu Mittag. — We eat lunch together.' },
+    { de: 'trinken', article: '', en: 'to drink', ex: 'Sie trinkt jeden Morgen Kaffee. — She drinks coffee every morning.' },
+    { de: 'fahren', article: '', en: 'to drive / travel', ex: 'Ich fahre morgen nach Berlin. — I am travelling to Berlin tomorrow.' },
+    { de: 'lernen', article: '', en: 'to learn', ex: 'Ich lerne jeden Tag Deutsch. — I learn German every day.' },
+    { de: 'lesen', article: '', en: 'to read', ex: 'Er liest gern Bücher. — He likes to read books.' },
+    { de: 'schreiben', article: '', en: 'to write', ex: 'Sie schreibt einen Brief. — She writes a letter.' },
+  ],
+  Adjectives: [
+    { de: 'groß', article: '', en: 'big / tall', ex: 'Das Gebäude ist sehr groß. — The building is very big.' },
+    { de: 'klein', article: '', en: 'small', ex: 'Das ist ein kleines Problem. — That is a small problem.' },
+    { de: 'schön', article: '', en: 'beautiful / nice', ex: 'Das Wetter ist heute schön. — The weather is nice today.' },
+    { de: 'gut', article: '', en: 'good', ex: 'Das Essen ist sehr gut. — The food is very good.' },
+    { de: 'schnell', article: '', en: 'fast / quick', ex: 'Er läuft sehr schnell. — He runs very fast.' },
+    { de: 'neu', article: '', en: 'new', ex: 'Ich habe ein neues Auto. — I have a new car.' },
+    { de: 'alt', article: '', en: 'old', ex: 'Das ist ein altes Haus. — That is an old house.' },
+    { de: 'müde', article: '', en: 'tired', ex: 'Ich bin heute sehr müde. — I am very tired today.' },
+    { de: 'glücklich', article: '', en: 'happy', ex: 'Sie ist sehr glücklich. — She is very happy.' },
+    { de: 'wichtig', article: '', en: 'important', ex: 'Das ist eine wichtige Frage. — That is an important question.' },
+  ]
+};
+
+const phrasesData = {
+  Greetings: [
+    { de: 'Wie heißt du?', en: 'What is your name?' },
+    { de: 'Ich heiße...', en: 'My name is...' },
+    { de: 'Wie geht es Ihnen?', en: 'How are you? (formal)' },
+    { de: 'Es geht mir gut, danke.', en: 'I am fine, thank you.' },
+    { de: 'Freut mich, Sie kennenzulernen.', en: 'Nice to meet you.' },
+    { de: 'Woher kommen Sie?', en: 'Where are you from?' },
+    { de: 'Ich komme aus Australien.', en: 'I come from Australia.' },
+    { de: 'Sprechen Sie Englisch?', en: 'Do you speak English?' },
+  ],
+  Travel: [
+    { de: 'Wo ist der Bahnhof?', en: 'Where is the train station?' },
+    { de: 'Wie komme ich zum Hotel?', en: 'How do I get to the hotel?' },
+    { de: 'Ein Ticket nach Berlin, bitte.', en: 'One ticket to Berlin, please.' },
+    { de: 'Wann fährt der nächste Zug?', en: 'When does the next train leave?' },
+    { de: 'Ich habe mich verlaufen.', en: 'I am lost.' },
+    { de: 'Können Sie mir helfen?', en: 'Can you help me?' },
+    { de: 'Wie weit ist es bis...?', en: 'How far is it to...?' },
+  ],
+  Food: [
+    { de: 'Die Speisekarte, bitte.', en: 'The menu, please.' },
+    { de: 'Ich möchte bestellen.', en: 'I would like to order.' },
+    { de: 'Das schmeckt sehr lecker!', en: 'That tastes very delicious!' },
+    { de: 'Ich bin Vegetarier/in.', en: 'I am vegetarian.' },
+    { de: 'Die Rechnung, bitte.', en: 'The bill, please.' },
+    { de: 'Einen Kaffee, bitte.', en: 'A coffee, please.' },
+    { de: 'Prost!', en: 'Cheers!' },
+    { de: 'Guten Appetit!', en: 'Enjoy your meal!' },
+  ],
+  Emergency: [
+    { de: 'Hilfe!', en: 'Help!' },
+    { de: 'Rufen Sie bitte einen Arzt!', en: 'Please call a doctor!' },
+    { de: 'Ich brauche Hilfe.', en: 'I need help.' },
+    { de: 'Wo ist die nächste Apotheke?', en: 'Where is the nearest pharmacy?' },
+    { de: 'Es ist ein Notfall.', en: 'It is an emergency.' },
+    { de: 'Ich verstehe nicht.', en: 'I do not understand.' },
+    { de: 'Können Sie das wiederholen?', en: 'Can you repeat that?' },
+  ]
+};
+
+const numbers = [
+  {n:0,de:'null',pron:'nool'},{n:1,de:'eins',pron:'aynts'},{n:2,de:'zwei',pron:'tsvai'},
+  {n:3,de:'drei',pron:'drai'},{n:4,de:'vier',pron:'feer'},{n:5,de:'fünf',pron:'fuenf'},
+  {n:6,de:'sechs',pron:'zeks'},{n:7,de:'sieben',pron:'zeeben'},{n:8,de:'acht',pron:'akht'},
+  {n:9,de:'neun',pron:'noyn'},{n:10,de:'zehn',pron:'tsayn'},{n:11,de:'elf',pron:'elf'},
+  {n:12,de:'zwölf',pron:'tsvoelf'},{n:13,de:'dreizehn',pron:'drai-tsayn'},{n:14,de:'vierzehn',pron:'feer-tsayn'},
+  {n:15,de:'fünfzehn',pron:'fuenf-tsayn'},{n:16,de:'sechzehn',pron:'zech-tsayn'},{n:17,de:'siebzehn',pron:'zeep-tsayn'},
+  {n:18,de:'achtzehn',pron:'akht-tsayn'},{n:19,de:'neunzehn',pron:'noyn-tsayn'},{n:20,de:'zwanzig',pron:'tsvahn-tsikh'},
+  {n:21,de:'einundzwanzig',pron:'ayn-oont-tsvahn-tsikh'},{n:30,de:'dreißig',pron:'drai-sikh'},
+  {n:40,de:'vierzig',pron:'feer-tsikh'},{n:50,de:'fünfzig',pron:'fuenf-tsikh'},
+  {n:60,de:'sechzig',pron:'zech-tsikh'},{n:70,de:'siebzig',pron:'zeep-tsikh'},
+  {n:80,de:'achtzig',pron:'akht-tsikh'},{n:90,de:'neunzig',pron:'noyn-tsikh'},
+  {n:100,de:'hundert',pron:'hoon-dert'},{n:200,de:'zweihundert',pron:'tsvai-hoon-dert'},
+  {n:500,de:'fünfhundert',pron:'fuenf-hoon-dert'},{n:1000,de:'tausend',pron:'tow-zent'},
+];
+
+const numberRanges = {
+  '0–20': numbers.filter(x => x.n <= 20),
+  '21–100': numbers.filter(x => x.n >= 21 && x.n <= 100),
+  '100+': numbers.filter(x => x.n >= 100),
+};
+
+const grammarTopics = [
+  {
+    id: 'articles', label: 'Definite Articles', icon: '📖',
+    html: `<h3>Definite Articles (der, die, das)</h3>
+    <p class="desc">German has three genders: masculine (der), feminine (die), and neuter (das). The article changes based on the grammatical case.</p>
+    <div class="table-wrap"><table>
+      <tr><th>Case</th><th>Masculine</th><th>Feminine</th><th>Neuter</th><th>Plural</th></tr>
+      <tr><td>Nominative</td><td><em>der</em></td><td><em>die</em></td><td><em>das</em></td><td><em>die</em></td></tr>
+      <tr><td>Accusative</td><td><em>den</em></td><td><em>die</em></td><td><em>das</em></td><td><em>die</em></td></tr>
+      <tr><td>Dative</td><td><em>dem</em></td><td><em>der</em></td><td><em>dem</em></td><td><em>den</em></td></tr>
+      <tr><td>Genitive</td><td><em>des</em></td><td><em>der</em></td><td><em>des</em></td><td><em>der</em></td></tr>
+    </table></div>
+    <div class="grammar-note">💡 Tip: The nominative case is used for the subject, accusative for the direct object, dative for the indirect object, and genitive shows possession.</div>
+    <div class="example-box"><div class="ex-label">Examples</div>
+      <div class="ex-row"><span class="de">Der Mann liest das Buch.</span><span class="en">The man reads the book.</span></div>
+      <div class="ex-row"><span class="de">Ich gebe dem Kind den Ball.</span><span class="en">I give the child the ball.</span></div>
+    </div>`
+  },
+  {
+    id: 'indefinite', label: 'Indefinite Articles', icon: '📝',
+    html: `<h3>Indefinite Articles (ein, eine)</h3>
+    <p class="desc">Indefinite articles correspond to "a/an" in English. They also decline by case and gender.</p>
+    <div class="table-wrap"><table>
+      <tr><th>Case</th><th>Masculine</th><th>Feminine</th><th>Neuter</th></tr>
+      <tr><td>Nominative</td><td><em>ein</em></td><td><em>eine</em></td><td><em>ein</em></td></tr>
+      <tr><td>Accusative</td><td><em>einen</em></td><td><em>eine</em></td><td><em>ein</em></td></tr>
+      <tr><td>Dative</td><td><em>einem</em></td><td><em>einer</em></td><td><em>einem</em></td></tr>
+      <tr><td>Genitive</td><td><em>eines</em></td><td><em>einer</em></td><td><em>eines</em></td></tr>
+    </table></div>
+    <div class="grammar-note">💡 There is no plural form of ein. Instead, German uses no article or kein/keine for negation.</div>
+    <div class="example-box"><div class="ex-label">Examples</div>
+      <div class="ex-row"><span class="de">Ich habe einen Hund.</span><span class="en">I have a dog. (masc., acc.)</span></div>
+      <div class="ex-row"><span class="de">Das ist eine gute Idee.</span><span class="en">That is a good idea. (fem., nom.)</span></div>
+    </div>`
+  },
+  {
+    id: 'sein', label: 'Verb: sein (to be)', icon: '🔧',
+    html: `<h3>Verb: sein — to be</h3>
+    <p class="desc">One of the most irregular but essential verbs in German. Used in present, past, and perfect tenses.</p>
+    <div class="table-wrap"><table>
+      <tr><th>Person</th><th>Present</th><th>Simple Past</th></tr>
+      <tr><td>ich (I)</td><td><em>bin</em></td><td><em>war</em></td></tr>
+      <tr><td>du (you)</td><td><em>bist</em></td><td><em>warst</em></td></tr>
+      <tr><td>er/sie/es</td><td><em>ist</em></td><td><em>war</em></td></tr>
+      <tr><td>wir (we)</td><td><em>sind</em></td><td><em>waren</em></td></tr>
+      <tr><td>ihr (you all)</td><td><em>seid</em></td><td><em>wart</em></td></tr>
+      <tr><td>sie/Sie (they/you)</td><td><em>sind</em></td><td><em>waren</em></td></tr>
+    </table></div>
+    <div class="example-box"><div class="ex-label">Examples</div>
+      <div class="ex-row"><span class="de">Ich bin Student.</span><span class="en">I am a student.</span></div>
+      <div class="ex-row"><span class="de">Wir waren gestern müde.</span><span class="en">We were tired yesterday.</span></div>
+    </div>`
+  },
+  {
+    id: 'haben', label: 'Verb: haben (to have)', icon: '🔧',
+    html: `<h3>Verb: haben — to have</h3>
+    <p class="desc">Extremely common verb, also used as an auxiliary to form the Perfekt tense.</p>
+    <div class="table-wrap"><table>
+      <tr><th>Person</th><th>Present</th><th>Simple Past</th></tr>
+      <tr><td>ich</td><td><em>habe</em></td><td><em>hatte</em></td></tr>
+      <tr><td>du</td><td><em>hast</em></td><td><em>hattest</em></td></tr>
+      <tr><td>er/sie/es</td><td><em>hat</em></td><td><em>hatte</em></td></tr>
+      <tr><td>wir</td><td><em>haben</em></td><td><em>hatten</em></td></tr>
+      <tr><td>ihr</td><td><em>habt</em></td><td><em>hattet</em></td></tr>
+      <tr><td>sie/Sie</td><td><em>haben</em></td><td><em>hatten</em></td></tr>
+    </table></div>
+    <div class="grammar-note">💡 Use haben + past participle to form Perfekt: Ich habe gegessen. (I have eaten.)</div>`
+  },
+  {
+    id: 'cases', label: 'The Four Cases', icon: '⚖️',
+    html: `<h3>The Four Grammatical Cases</h3>
+    <p class="desc">German grammar uses four cases that determine how nouns, pronouns and articles change form.</p>
+    <div class="table-wrap"><table>
+      <tr><th>Case</th><th>German</th><th>Function</th><th>Example</th></tr>
+      <tr><td><em>Nominative</em></td><td>Nominativ</td><td>Subject of the sentence</td><td>Der Mann schläft.</td></tr>
+      <tr><td><em>Accusative</em></td><td>Akkusativ</td><td>Direct object</td><td>Ich sehe den Mann.</td></tr>
+      <tr><td><em>Dative</em></td><td>Dativ</td><td>Indirect object</td><td>Ich helfe dem Mann.</td></tr>
+      <tr><td><em>Genitive</em></td><td>Genitiv</td><td>Possession</td><td>Das ist das Buch des Mannes.</td></tr>
+    </table></div>
+    <div class="grammar-note">💡 Tip: Key prepositions determine case. Accusative: durch, für, gegen, ohne, um. Dative: aus, bei, mit, nach, seit, von, zu. Two-way: an, auf, hinter, in, neben, über, unter, vor, zwischen.</div>`
+  },
+  {
+    id: 'plurals', label: 'Noun Plurals', icon: '📊',
+    html: `<h3>Forming Noun Plurals</h3>
+    <p class="desc">German plurals follow several patterns, though many must simply be memorised. Plural forms always use <em>die</em> as their article.</p>
+    <div class="table-wrap"><table>
+      <tr><th>Pattern</th><th>Singular</th><th>Plural</th><th>Meaning</th></tr>
+      <tr><td>No change</td><td>der Lehrer</td><td><em>die Lehrer</em></td><td>teacher</td></tr>
+      <tr><td>Add -e</td><td>der Tag</td><td><em>die Tage</em></td><td>day</td></tr>
+      <tr><td>Add -er + umlaut</td><td>das Kind</td><td><em>die Kinder</em></td><td>child</td></tr>
+      <tr><td>Add -en</td><td>die Frau</td><td><em>die Frauen</em></td><td>woman</td></tr>
+      <tr><td>Add -nen</td><td>die Lehrerin</td><td><em>die Lehrerinnen</em></td><td>female teacher</td></tr>
+      <tr><td>Add -s</td><td>das Auto</td><td><em>die Autos</em></td><td>car</td></tr>
+    </table></div>`
+  },
+  {
+    id: 'negation', label: 'Negation', icon: '❌',
+    html: `<h3>Negation in German</h3>
+    <p class="desc">German uses two main words for negation: <em>nicht</em> (not) and <em>kein</em> (no / not a).</p>
+    <div class="table-wrap"><table>
+      <tr><th>Rule</th><th>German</th><th>English</th></tr>
+      <tr><td>nicht + adjective/verb</td><td><em>Das ist nicht gut.</em></td><td>That is not good.</td></tr>
+      <tr><td>nicht + adverb</td><td><em>Er kommt nicht heute.</em></td><td>He is not coming today.</td></tr>
+      <tr><td>kein + noun (no article)</td><td><em>Ich habe kein Geld.</em></td><td>I have no money.</td></tr>
+      <tr><td>kein + noun (a/an)</td><td><em>Das ist kein Hund.</em></td><td>That is not a dog.</td></tr>
+    </table></div>
+    <div class="grammar-note">💡 Rule of thumb: Use kein when you would normally use ein/eine or no article. Use nicht for everything else.</div>`
+  },
+  {
+    id: 'word-order', label: 'Word Order', icon: '🔀',
+    html: `<h3>German Word Order</h3>
+    <p class="desc">German follows the V2 rule in main clauses: the verb is always the second element. In subordinate clauses, the verb goes to the end.</p>
+    <div class="table-wrap"><table>
+      <tr><th>Clause Type</th><th>Structure</th><th>Example</th></tr>
+      <tr><td>Main clause</td><td>Subject – Verb – Object</td><td><em>Ich esse einen Apfel.</em></td></tr>
+      <tr><td>Inverted (V2)</td><td>Time – Verb – Subject – Object</td><td><em>Heute esse ich einen Apfel.</em></td></tr>
+      <tr><td>Modal verb</td><td>Subject – Modal – Object – Infinitive</td><td><em>Ich will einen Apfel essen.</em></td></tr>
+      <tr><td>Subordinate</td><td>…weil Subject Object Verb</td><td><em>…weil ich einen Apfel esse.</em></td></tr>
+    </table></div>
+    <div class="grammar-note">💡 Time – Manner – Place: In German, the order is: when? how? where? e.g. Ich fahre morgen schnell nach Hause.</div>`
+  },
+];
+
+// ── STATE ────────────────────────────────────────────────────
+let xp = 0, streak = 0;
+let fcCategory = 'Greetings', fcCards = [], fcIndex = 0;
+let quizQuestions = [], quizIndex = 0, quizScore = 0;
+let activeGrammar = 'articles';
+let phraseCategory = 'Greetings';
+let numRange = '0–20';
+
+// ── XP ───────────────────────────────────────────────────────
+function addXP(n) {
+  xp += n;
+  document.getElementById('xpLabel').textContent = xp;
+  document.getElementById('xpFill').style.width = Math.min(100, (xp % 100)) + '%';
+  document.getElementById('stat-xp-home').textContent = xp;
+  showToast(`+${n} XP`);
+}
+
+// ── TOAST ────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── SCREENS ──────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  const btns = document.querySelectorAll('.nav-btn');
+  const labels = ['home','flashcards','quiz','grammar','phrases','numbers'];
+  btns.forEach((b,i) => { if(labels[i] === id) b.classList.add('active'); });
+
+  if (id === 'flashcards') initFlashcards();
+  if (id === 'quiz') startQuiz();
+  if (id === 'grammar') initGrammar();
+  if (id === 'phrases') initPhrases();
+  if (id === 'numbers') initNumbers();
+}
+
+// ── FLASHCARDS ───────────────────────────────────────────────
+function initFlashcards() {
+  // Build category tabs
+  const tabsEl = document.getElementById('fcCatTabs');
+  tabsEl.innerHTML = '';
+  Object.keys(vocabulary).forEach(cat => {
+    const b = document.createElement('button');
+    b.className = 'cat-tab' + (cat === fcCategory ? ' active' : '');
+    b.textContent = cat;
+    b.onclick = () => { fcCategory = cat; initFlashcards(); };
+    tabsEl.appendChild(b);
+  });
+  fcCards = [...vocabulary[fcCategory]];
+  fcIndex = 0;
+  document.getElementById('flashcard').classList.remove('flipped');
+  renderFlashcard();
+}
+
+function renderFlashcard() {
+  if (!fcCards.length) return;
+  const c = fcCards[fcIndex];
+  document.getElementById('fc-word').textContent = c.de;
+  document.getElementById('fc-article').textContent = c.article ? c.article : '';
+  document.getElementById('fc-translation').textContent = c.en;
+  document.getElementById('fc-example').textContent = c.ex || '';
+  document.getElementById('fc-progress').textContent = `${fcIndex + 1} / ${fcCards.length}`;
+  document.getElementById('flashcard').classList.remove('flipped');
+}
+
+function flipCard() {
+  document.getElementById('flashcard').classList.toggle('flipped');
+}
+
+function nextCard() {
+  fcIndex = (fcIndex + 1) % fcCards.length;
+  renderFlashcard();
+}
+function prevCard() {
+  fcIndex = (fcIndex - 1 + fcCards.length) % fcCards.length;
+  renderFlashcard();
+}
+function shuffleCards() {
+  for (let i = fcCards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [fcCards[i], fcCards[j]] = [fcCards[j], fcCards[i]];
+  }
+  fcIndex = 0;
+  renderFlashcard();
+  showToast('Cards shuffled!');
+}
+function markCard(correct) {
+  if (correct) addXP(5);
+  else showToast('Keep practising!');
+  nextCard();
+}
+
+// ── QUIZ ─────────────────────────────────────────────────────
+function buildQuizQuestions() {
+  const allWords = Object.values(vocabulary).flat();
+  const shuffled = allWords.sort(() => Math.random() - 0.5).slice(0, 10);
+  return shuffled.map(word => {
+    const others = allWords.filter(w => w.en !== word.en).sort(() => Math.random() - 0.5).slice(0, 3);
+    const options = [...others.map(w => w.en), word.en].sort(() => Math.random() - 0.5);
+    return { question: word.de, article: word.article, correct: word.en, options, ex: word.ex || '' };
+  });
+}
+
+function startQuiz() {
+  document.getElementById('quiz-active').style.display = 'block';
+  document.getElementById('quiz-result').style.display = 'none';
+  quizQuestions = buildQuizQuestions();
+  quizIndex = 0;
+  quizScore = 0;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = quizQuestions[quizIndex];
+  document.getElementById('quiz-q-num').textContent = `Question ${quizIndex + 1} of ${quizQuestions.length}`;
+  document.getElementById('quiz-score-live').textContent = `Score: ${quizScore}`;
+  document.getElementById('qProgressFill').style.width = (quizIndex / quizQuestions.length * 100) + '%';
+
+  document.getElementById('quiz-q-text').textContent = (q.article ? q.article + ' ' : '') + q.question;
+  document.getElementById('quiz-q-sub').textContent = 'What does this mean in English?';
+
+  const optsEl = document.getElementById('quiz-opts');
+  optsEl.innerHTML = '';
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-opt';
+    btn.textContent = opt;
+    btn.onclick = () => answerQuiz(opt, q.correct, q.ex);
+    optsEl.appendChild(btn);
+  });
+
+  document.getElementById('quiz-feedback').className = 'quiz-feedback';
+  document.getElementById('quiz-feedback').textContent = '';
+  document.getElementById('quiz-next-btn').style.display = 'none';
+}
+
+function answerQuiz(chosen, correct, ex) {
+  document.querySelectorAll('.quiz-opt').forEach(b => {
+    b.disabled = true;
+    if (b.textContent === correct) b.classList.add('correct');
+    if (b.textContent === chosen && chosen !== correct) b.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('quiz-feedback');
+  if (chosen === correct) {
+    quizScore++;
+    streak++;
+    document.getElementById('stat-streak').textContent = streak;
+    addXP(10);
+    fb.className = 'quiz-feedback show ok';
+    fb.textContent = '✓ Correct! ' + (ex || '');
+  } else {
+    streak = 0;
+    document.getElementById('stat-streak').textContent = streak;
+    fb.className = 'quiz-feedback show bad';
+    fb.textContent = `✗ The correct answer is "${correct}". ${ex || ''}`;
+  }
+  document.getElementById('quiz-score-live').textContent = `Score: ${quizScore}`;
+  document.getElementById('quiz-next-btn').style.display = 'inline-block';
+}
+
+function nextQuestion() {
+  quizIndex++;
+  if (quizIndex >= quizQuestions.length) {
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showResult() {
+  document.getElementById('quiz-active').style.display = 'none';
+  document.getElementById('quiz-result').style.display = 'block';
+  document.getElementById('final-score').textContent = quizScore;
+  document.getElementById('final-denom').textContent = `/ ${quizQuestions.length}`;
+  const pct = quizScore / quizQuestions.length;
+  let msg, sub;
+  if (pct === 1) { msg = 'Ausgezeichnet! 🏆'; sub = 'Perfect score — you nailed every question!'; }
+  else if (pct >= 0.8) { msg = 'Sehr gut! 🌟'; sub = 'Great work — almost perfect!'; }
+  else if (pct >= 0.6) { msg = 'Gut gemacht!'; sub = 'Good effort — keep practising!'; }
+  else if (pct >= 0.4) { msg = 'Nicht schlecht'; sub = 'Keep going — you\'re getting there!'; }
+  else { msg = 'Weiter üben!'; sub = 'Keep practising — you\'ll improve!'; }
+  document.getElementById('score-msg').textContent = msg;
+  document.getElementById('score-sub').textContent = sub;
+}
+
+// ── GRAMMAR ──────────────────────────────────────────────────
+function initGrammar() {
+  const menuEl = document.getElementById('grammarMenu');
+  menuEl.innerHTML = '';
+  grammarTopics.forEach(t => {
+    const div = document.createElement('div');
+    div.className = 'grammar-item' + (t.id === activeGrammar ? ' active' : '');
+    div.innerHTML = `<span class="dot"></span>${t.label}`;
+    div.onclick = () => { activeGrammar = t.id; initGrammar(); };
+    menuEl.appendChild(div);
+  });
+  const topic = grammarTopics.find(t => t.id === activeGrammar);
+  document.getElementById('grammarContent').innerHTML = topic ? topic.html : '';
+}
+
+// ── PHRASES ──────────────────────────────────────────────────
+function initPhrases() {
+  const tabsEl = document.getElementById('phraseCatTabs');
+  tabsEl.innerHTML = '';
+  Object.keys(phrasesData).forEach(cat => {
+    const b = document.createElement('button');
+    b.className = 'cat-tab' + (cat === phraseCategory ? ' active' : '');
+    b.textContent = cat;
+    b.onclick = () => { phraseCategory = cat; initPhrases(); };
+    tabsEl.appendChild(b);
+  });
+
+  const listEl = document.getElementById('phrasesList');
+  listEl.innerHTML = '';
+  (phrasesData[phraseCategory] || []).forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'phrase-card';
+    div.innerHTML = `<span class="phrase-de">${p.de}</span><span class="phrase-en">${p.en}</span><span class="phrase-cat">${phraseCategory}</span>`;
+    listEl.appendChild(div);
+  });
+}
+
+// ── NUMBERS ──────────────────────────────────────────────────
+function initNumbers() {
+  const tabsEl = document.getElementById('numRangeTabs');
+  tabsEl.innerHTML = '';
+  Object.keys(numberRanges).forEach(r => {
+    const b = document.createElement('button');
+    b.className = 'cat-tab' + (r === numRange ? ' active' : '');
+    b.textContent = r;
+    b.onclick = () => { numRange = r; initNumbers(); };
+    tabsEl.appendChild(b);
+  });
+
+  const gridEl = document.getElementById('numbersGrid');
+  gridEl.innerHTML = '';
+  (numberRanges[numRange] || []).forEach(num => {
+    const div = document.createElement('div');
+    div.className = 'num-card';
+    div.innerHTML = `<div class="num-digit">${num.n}</div><div><div class="num-word">${num.de}</div><div class="num-pron">${num.pron}</div></div>`;
+    gridEl.appendChild(div);
+  });
+}
+
+// ── INIT ─────────────────────────────────────────────────────
+initFlashcards(); // preload so first visit to flashcards is instant
+</script>
+</body>
+</html>
